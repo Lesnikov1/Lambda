@@ -23,15 +23,13 @@ object ChatService {
     fun getUnreadChatsCount() = chats.values.count { chat -> chat.messages.any { !it.read } }
 
     fun getLastMessages() =
-        chats.values.mapNotNull { it.messages.lastOrNull()?.text }.takeIf { it.isNotEmpty() }
+        chats.values.asSequence().mapNotNull { it.messages.lastOrNull()?.text }.toList().takeIf { it.isNotEmpty() }
             ?: throw NoMessageException("нет сообщений...")
 
     fun deleteChat(userId: Int) = chats.remove(userId) ?: throw NoSuchChatException("нет чата...")
 
-    fun getMessages(
-        userId: Int,
-        count: Int
-    ): List<Message> { //по count можно поймать IllegalArgumentException или проверка на отрицательное число???
+    fun getMessages(userId: Int, count: Int): List<Message>  {
+        //по count можно поймать IllegalArgumentException или проверка на отрицательное число???
         val chat = chats[userId] ?: throw NoSuchChatException("нет чата...")
         return chat.messages.takeLast(count).onEach { it.read = true }
     }
@@ -63,6 +61,5 @@ fun main() {
 //    ChatService.deleteMessage(2, 1)
 //    ChatService.deleteChat(1)
 //    ChatService.getChats()
-//    println(ChatService.getMessages(1, 1))
 //    println(ChatService.messagesExists(1))
 }
