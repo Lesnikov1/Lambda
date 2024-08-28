@@ -23,7 +23,7 @@ object ChatService {
     fun getUnreadChatsCount() = chats.values.count { chat -> chat.messages.any { !it.read } }
 
     fun getLastMessages() =
-        chats.values.mapNotNull { it.messages.lastOrNull()?.text }.toList().takeIf { it.isNotEmpty() }
+        chats.values.asSequence().mapNotNull { it.messages.lastOrNull()?.text }.toList().takeIf { it.isNotEmpty() }
             ?: throw NoMessageException("нет сообщений...")
 
     fun deleteChat(userId: Int) = chats.remove(userId) ?: throw NoSuchChatException("нет чата...")
